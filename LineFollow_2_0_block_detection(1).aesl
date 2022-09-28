@@ -1,0 +1,117 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+
+
+<!--list of constants-->
+<constant value="0" name="STOPPED"/>
+<constant value="1" name="LEFT"/>
+<constant value="2" name="RIGHT"/>
+<constant value="300" name="EDGE"/>
+<constant value="400" name="TARGET"/>
+<constant value="3" name="LOST"/>
+<constant value="750" name="LOST_TIMER"/>
+<constant value="3200" name="THRESHOLD"/>
+<constant value="4" name="BLOCKED"/>
+
+
+<!--show keywords state-->
+<keywords flag="true"/>
+
+
+<!--node thymio-II-->
+<node nodeId="1" name="thymio-II">#*  File: LineFollow
+	Date: Jan, 2022
+	Author: CSCI 1108: Experimental Robotics.
+	Purpose: Lab 7, Dealing with Failure
+	Description: A program that makes the Thymio Robot follow a black
+	             taped line.
+*#
+
+var state = STOPPED                          # variable declarations
+var min
+var max
+var mean
+
+motor.left.target = 0                        # reset motors
+motor.right.target = 0
+call leds.circle(0,0,0,0,0,0,0,0)            # turn off LEDs
+timer.period[0] = 0                          # turn off timer0
+
+onevent button.forward                       # on forward button press
+  state = LEFT                               # transition to LEFT state
+
+onevent button.backward                      # on backward button press
+  state = STOPPED                            # transition to STOPPED state
+  motor.left.target = 0                      # stop motors
+  motor.right.target = 0
+  timer.period[0] = 0                        # turn pff timer0
+  call leds.circle(0,0,0,0,0,0,0,0)          # turn off LEDs
+	
+onevent prox                                 # on prox event
+  if state != STOPPED then                   # if robot is moving
+    
+    # if the state is not lost, but robot loses the line, set lost timer
+    if state != LOST and prox.ground.delta[0] >= EDGE and prox.ground.delta[1] >= EDGE then
+    	timer.period[0] = LOST_TIMER           # begin lost check (lost timer)
+    end
+    
+    # if moving left and not sensing black line with left sensor
+    if state == LEFT and  (prox.ground.delta[0] >= EDGE and prox.ground.delta[1] &lt; EDGE) then
+      state = RIGHT                          # transition to RIGHT state
+      call leds.circle(0,0,32,0,0,0,0,0)
+      timer.period[0] = 0
+      motor.left.target = TARGET             # move right
+      motor.right.target = 0
+    end
+    
+    # if moving right and not sensing black line with right sensor
+    if (state == RIGHT) and (prox.ground.delta[0] &lt; EDGE and prox.ground.delta[1] >= EDGE) then
+      state = LEFT                           # transition to LEFT state
+      call leds.circle(0,0,0,0,0,0,32,0)
+      timer.period[0] = 0                    # turn off timer0
+      motor.left.target = 0                  # move left
+      motor.right.target = TARGET
+    end    
+    
+    # if lost and then found the tape, turn in the direction of the tape
+    if state == LOST and (prox.ground.delta[0] &lt; EDGE or prox.ground.delta[1] &lt; EDGE) then
+	    if prox.ground.delta[0] &lt; EDGE  then
+	    	state = LEFT                           # transition to LEFT state
+	      call leds.circle(0,0,0,0,0,0,32,0)
+	      timer.period[0] = 0                    # turn off timer0
+	      motor.left.target = 0                  # move left
+	      motor.right.target = TARGET
+	    end
+    	if prox.ground.delta[1] &lt; EDGE then
+    		state = RIGHT                           # transition to RIGHT state
+	      call leds.circle(0,0,0,0,0,0,32,0)
+	      timer.period[0] = 0                    # turn off timer0
+	      motor.left.target = TARGET             # move right
+	      motor.right.target = 0
+    	end
+    end
+    if state == LEFT or state == RIGHT then
+    	call math.stat(prox.horizontal[0:4], min, max, mean)
+    	if max > THRESHOLD then
+    		state = BLOCKED
+    		motor.left.target = 0
+    		motor.right.target = 0
+    	end
+    end
+  end
+
+#if lost for more than 0.75 seconds, go backwards to find line again
+onevent timer0
+  state = LOST                               # transition to LOST state
+  call leds.circle(32,32,32,32,32,32,32,32)  # turn on circle of LEDs
+  timer.period[0] = 0                        # turn off timer0 (lost timer)
+  motor.left.target = -motor.left.target     # reverse RIGHT state motion
+  motor.right.target = -motor.right.target
+
+</node>
+
+
+</network>

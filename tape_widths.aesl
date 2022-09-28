@@ -1,0 +1,22 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+
+
+<!--list of constants-->
+<constant value="0" name="STOPPED"/>
+<constant value="1" name="SEARCH"/>
+<constant value="2" name="BLACK"/>
+<constant value="3" name="GRAY"/>
+<constant value="350" name="TARGET"/>
+<constant value="120" name="BLACK_TH"/>
+<constant value="625" name="GRAY_TH"/>
+
+
+<!--show keywords state-->
+<keywords flag="true"/>
+
+
+</network>

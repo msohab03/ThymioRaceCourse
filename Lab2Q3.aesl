@@ -1,0 +1,24 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+
+
+<!--list of constants-->
+
+
+<!--show keywords state-->
+<keywords flag="true"/>
+
+
+<!--node thymio-II-->
+<node nodeId="1" name="thymio-II">var i 
+var inches[10] = [20,40,60,80,100,120,140,160,180,200]
+var centimeters[10] = inches
+for i in 0:9 do
+	call math.muldiv(centimeters[i],inches[i],254,100)
+end</node>
+
+
+</network>

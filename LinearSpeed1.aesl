@@ -1,0 +1,100 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+
+
+<!--list of constants-->
+<constant value="5000" name="TIMER"/>
+<constant value="1000" name="BUZZER"/>
+<constant value="100" name="SPEED"/>
+
+
+<!--show keywords state-->
+<keywords flag="true"/>
+
+
+<!--node thymio-II-->
+<node nodeId="1" name="thymio-II">#*
+ Program: LineSpeed.aesl
+ Course:  CSCI 1108 - Experimental Robotics
+ Lab: 	  Lab 5 - Modeling Actuators, Part 1.
+ Date: 	  September 2021
+ Purpose: Robot drives forward for 5 seconds then stops
+*#
+
+var speed = SPEED
+
+#-----------------Initialization--------------------------#
+motor.left.target = 0
+motor.right.target = 0
+timer.period[0] = 0
+timer.period[1] = 0
+callsub showspeed
+
+#-----------------Event Handlers--------------------------#
+onevent button.forward				# On Forward button press
+	motor.left.target = speed
+	motor.right.target = speed
+	timer.period[0] = TIMER
+	timer.period[1]= BUZZER
+	callsub showspeed
+	
+onevent button.backward				# On Backwad button press
+	callsub stop
+
+onevent button.right				# On Right button press
+	if speed &lt; 500 then
+		speed +=50
+		if  motor.left.target !=0 then
+			motor.left.target = speed
+			motor.right.target = speed
+		end
+		callsub showspeed
+	end
+	
+onevent button.left					# On Left button press
+	if speed > 100 then
+		speed -=50
+		if motor.left.target !=0 then
+			motor.left.target = speed
+			motor.right.target = speed
+		end
+		callsub showspeed
+	end
+		  
+onevent timer0						# On Timer
+	callsub stop
+	
+onevent timer1
+	call sound.freq (440,10)
+		  		  
+#-----------------Subroutines--------------------------#
+sub stop
+	motor.left.target = 0
+	motor.right.target = 0
+	timer.period[0] = 0
+	timer.period[1] = 0
+	call leds.circle(0,0,0,0,0,0,0,0)
+
+# This subroutine lights up the circle LED's to show current speed
+sub showspeed
+	if speed == 100 then
+		call leds.circle(32,0,0,0,0,0,0,0)
+	elseif speed == 200 then
+		call leds.circle(32,32,0,0,0,0,0,0)
+	elseif speed == 300 then
+	  	call leds.circle(32,32,32,0,0,0,0,0)
+	elseif speed == 400 then
+		call leds.circle(32,32,32,32,0,0,0,0)
+	elseif speed == 500 then
+		call leds.circle(32,32,32,32,32,0,0,0)
+	else 
+	end
+	
+
+	</node>
+
+
+</network>

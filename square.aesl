@@ -1,0 +1,51 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+
+
+<!--list of constants-->
+
+
+<!--show keywords state-->
+<keywords flag="true"/>
+
+
+<!--node thymio-II-->
+<node nodeId="1" name="thymio-II">#*
+ Program: square.aesl
+ Course:  CSCI 1108 - Experimental Robotics
+ Lab: 	  Lab 2 - The Thymio Robot, Part 2.
+ Date: 	  September 2021
+*#
+
+#-----------------Initialization--------------------------#
+motor.left.target = 0 			# reset motors amd timers
+motor.right.target = 0
+timer.period[0] = 0
+
+#-----------------Event Handlers-------------------------#
+onevent button.forward 			# on forward button press
+	motor.left.target = SPEED 	# SPEED is a constant
+	motor.right.target = SPEED
+	timer.period[0] = FWD_PERIOD
+
+onevent button.backward 			# on reverse button 
+	motor.left.target = 0 		
+	motor.right.target = 0
+	timer.period[0] = 0
+
+onevent timer0 					# on timer event 
+	# swtitch the direction of the left motor
+	motor.left.target = -motor.left.target  
+	# if we are turning
+	if motor.left.target &lt; 0 then 
+		timer.period[0] = TURN_PERIOD # set turn timer
+	# if we are going straight
+	else
+		timer.period[0] = FWD_PERIOD # set forward timer
+	end</node>
+
+
+</network>

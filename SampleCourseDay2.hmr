@@ -1,0 +1,3 @@
+length 1800 ; width 900 ; num 1 ; objs id 100 ; typ 1 ; clr 1 ; org 0 0 ; pos 914 454 ; dir 0.0 ; num 1 ; polys num 22 ; verts -666 195 -667 -18 -642 -217 -609 -256 -577 -260 -545 -244 -428 -165 -254 -17 -191 35 -156 44 -117 35 87 -191 179 -251 229 -251 307 -234 587 -60 657 5 668 29 658 58 608 81 203 248 -562 261 ; EOS ; EOS ; num_bots 1 ; robots id 1 ; pos 249 654 ; dir 3.141593 ; typ -32768 ; EOS ; EOS EOT
+group_ver 1 ; num_groups 1 ; groups gid -1 ; bbox 0 0 0 0 ; pos 0 0 ; dir 0.0 ; num 3 ; objs 0 0 0 ; EOS ; EOS EOT
+id 1 ; buttons 0 0 0 0 0 ; tap 0 ; noise 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ; EOS EOT

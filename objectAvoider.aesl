@@ -1,0 +1,64 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+
+
+<!--list of constants-->
+
+
+<!--show keywords state-->
+<keywords flag="true"/>
+
+
+<!--node thymio-II-->
+<node nodeId="1" name="thymio-II">#*
+ Program: objectAvoider.aesl
+ Course:  CSCI 1108 - Experimental Robotics
+ Lab: 	  Lab 2 - The Thymio Robot, Part 4.
+ Date: 	  September 2021
+*#
+
+#------------------Variables------------------------------#
+var min 					# min over all sensor readings
+var max 					# max over all sensor readings
+var mean 				# average over all sensor readings
+
+#-----------------Initialization--------------------------#
+motor.left.target = 0 	# reset motors
+motor.right.target = 0
+
+#-----------------Event Handlers--------------------------#
+onevent button.forward 			# forward button	 pressed
+	motor.left.target = SPEED 	# start moving forward
+	motor.right.target = SPEED
+
+onevent button.backward 			# backward button pressed
+	motor.left.target = 0 		# stop motors
+	motor.right.target = 0
+
+onevent prox 					# check proximity sensors
+	if motor.right.target == 0 then 		# only if moving
+		return
+	end
+	# compute min, max, and mean over the current sensor readings
+	call math.stat( prox.horizontal[0:4], min, max, mean )
+	if max > THRESHOLD then 		# if a sensor is above threshold
+		# if we are moving forward
+		if motor.right.target > 0 and motor.left.target > 0 then
+			# if object is closer on the left
+			if prox.horizontal[0] > prox.horizontal[4] then
+				motor.right.target = -SPEED 	# turn right
+			else
+				motor.left.target = -SPEED 	# turn left
+			end
+		end
+	# else all sensors are below threshold, if we are also turning
+	elseif motor.right.target &lt; 0 or motor.left.target &lt; 0 then
+		motor.left.target = SPEED 			# move forward
+		motor.right.target = SPEED
+	end</node>
+
+
+</network>

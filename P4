@@ -1,0 +1,83 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+
+
+<!--list of constants-->
+<constant value="0" name="STOPPED"/>
+<constant value="800" name="SIMILARITY_CHECK"/>
+<constant value="1" name="READING"/>
+<constant value="3000" name="THRESHOLD"/>
+
+
+<!--show keywords state-->
+<keywords flag="true"/>
+
+
+<!--node thymio-II-->
+<node nodeId="1" name="thymio-II"># Group 4, Lab 9
+# Stationary bar code reader with front 3 sensors
+
+var state = STOPPED
+var farRight
+var farLeft
+var left
+var middle
+var right
+var min
+var max
+var mean
+
+onevent button.backward
+	state	= STOPPED
+	call leds.circle(0,0,0,0,0,0,0,0)
+	
+onevent button.forward
+	state = READING
+	left = 0
+	middle = 0
+	right = 0
+	callsub identify
+	
+
+
+sub identify
+	call leds.circle(0,0,0,0,0,0,0,0)
+	call math.stat(prox.horizontal[0:4],min,max,mean)
+			if  (prox.horizontal[0] - min) > SIMILARITY_CHECK then
+				farLeft = 32
+			else
+				farLeft = 0
+			end
+		# If left sensor far brighter than minimum sensor 
+			if  (prox.horizontal[1] - min) > SIMILARITY_CHECK then
+				left = 32
+				else
+				left = 0
+			end
+			# If mid sensor far brighter than minimum sensor
+			if  (prox.horizontal[2] - min) > SIMILARITY_CHECK then
+				middle = 32
+				else
+				middle = 0
+			end
+			# If right sensor far brighter than minimum sensor
+			if  (prox.horizontal[3] - min) > SIMILARITY_CHECK then
+				right = 32
+				else
+				right = 0
+			end
+			if (prox.horizontal[4] - min) > SIMILARITY_CHECK then
+				farRight = 32
+				else
+				farRight = 0
+			end
+	call leds.circle(middle,right,farRight,0,0,0,farLeft,left)
+	
+	
+	</node>
+
+
+</network>

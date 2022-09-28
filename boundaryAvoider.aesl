@@ -1,0 +1,58 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+
+
+<!--list of constants-->
+<constant value="300" name="SPEED"/>
+<constant value="200" name="EDGE "/>
+
+
+<!--show keywords state-->
+<keywords flag="true"/>
+
+
+<!--node thymio-II-->
+<node nodeId="1" name="thymio-II">#*
+ Program: boundaryAvoider.aesl
+ Course:  CSCI 1108 - Experimental Robotics
+ Lab: 	  Lab 2 - The Thymio Robot, Part 3.
+ Date: 	  September 2021
+*#
+
+#-----------------Initialization--------------------------#
+motor.left.target = 0 			# reset motors (turn them off)
+motor.right.target = 0
+
+#-----------------Event Handlers-------------------------#
+onevent button.forward 			# when forward button is pressed
+	motor.left.target = SPEED 	# start motors moving forward
+	motor.right.target = SPEED
+
+onevent button.backward 			# when backward button is pressed
+	motor.left.target = 0 		# stop the motors.
+	motor.right.target = 0
+
+onevent prox
+	# if not moving no need to proceed
+	if motor.left.target == 0 then 
+		return
+	end
+	# if we are moving forward
+	if motor.right.target > 0 and motor.left.target > 0 then
+		if prox.ground.delta[0] &lt; EDGE then 		# line is on left
+			motor.right.target = -SPEED 			# turn right
+		elseif prox.ground.delta[1] &lt; EDGE then 	# line on right
+			motor.left.target = -SPEED 			# turn left
+		end
+	# else we are not moving forward, if no line
+	elseif prox.ground.delta[0] > EDGE and prox.ground.delta[1] > EDGE then
+		motor.left.target = SPEED 				# move forward
+		motor.right.target = SPEED
+	end
+</node>
+
+
+</network>

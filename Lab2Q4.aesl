@@ -1,0 +1,33 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+
+
+<!--list of constants-->
+<constant value="100" name="ARRAYSIZE"/>
+
+
+<!--show keywords state-->
+<keywords flag="true"/>
+
+
+<!--node thymio-II-->
+<node nodeId="1" name="thymio-II">var i = 0
+var odd = 0
+var even = 0
+var q = ARRAYSIZE
+var myArray[ARRAYSIZE]
+call math.rand(myArray)
+for i in 0:99 do
+	if myArray[i]%2==0 then
+		even++
+		else
+		odd++
+	end 
+end
+</node>
+
+
+</network>

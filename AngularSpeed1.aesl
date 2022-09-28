@@ -1,0 +1,82 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+
+
+<!--list of constants-->
+<constant value="3" name="SAMPLES"/>
+<constant value="100" name="TARGET"/>
+<constant value="300" name="EDGE"/>
+
+
+<!--show keywords state-->
+<keywords flag="true"/>
+
+
+<!--node thymio-II-->
+<node nodeId="1" name="thymio-II">#*
+ Program: AngularSpeed.aesl
+ Course:  CSCI 1108 - Experimental Robotics
+ Lab: 	  Lab 5 - Modeling Actuators, Part 3.
+ Date: 	  September 2021
+ Purpose: Robot turns in circles
+*#
+
+#------------------------- Variables -------------------------------#
+var data[SAMPLES] # variable declarations
+var turn # id of turn being timed
+var min
+var max
+var mean
+var ontape # on tape
+
+#------------------------- Initialization -------------------------------#
+motor.left.target = 0 # reset motors
+motor.right.target = 0
+
+#------------------------- Event Handlers -------------------------------#
+onevent button.forward # ON forward button press
+	call math.fill( data, 0 ) # Init data array &amp; turn id
+	turn = -1
+	motor.left.target = -TARGET # Activate motors and timer
+	motor.right.target = TARGET
+	timer.period[0] = 100 # time turns in .1 secs
+	ontape = 0 # init on-tape flag
+
+onevent button.backward # On back button press
+	callsub stop # invoke subroutine to stop
+
+onevent prox # when prox event occurs
+	if motor.left.target != 0 then # if moving, proceed
+		if prox.ground.delta[0] &lt; EDGE then # if robot senses black tape
+			if ontape == 0 then
+				ontape = 1 # set ontape flag to true
+				turn++ # next 360 turn
+				if turn >= SAMPLES then # if no more turns, stop
+					callsub stop
+				end
+				call sound.freq( 440, 10) # sound progress beep
+			end
+		else
+			ontape = 0
+		end
+	end
+
+onevent timer0 # on timer0 event
+	if turn >= 0 then # if performing turn
+		data[turn]++ # inc time of turn
+	end
+#------------------------- Subroutines -------------------------------#
+sub stop # subroutine to stop robot
+motor.left.target = 0 # reset motors and timer
+motor.right.target = 0
+timer.period[0] = 0
+call math.stat( data, min, max, mean ) # compute stats on data
+
+
+	</node>
+
+
+</network>

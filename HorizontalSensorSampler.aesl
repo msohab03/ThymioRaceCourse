@@ -1,0 +1,46 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+
+
+<!--list of constants-->
+<constant value="5" name="SAMPLES"/>
+<constant value="500" name="SAMPLE_PERIOD"/>
+<constant value="2" name="SENSOR"/>
+
+
+<!--show keywords state-->
+<keywords flag="true"/>
+
+
+<!--node thymio-II-->
+<node nodeId="1" name="thymio-II">#*
+ Program: HorizontalSensorSampler.aesl
+ Course:  CSCI 1108 - Experimental Robotics
+ Lab: 	  Lab 4 - Modeling Sensors, Part 2.
+ Date: 	  September 2021
+*#
+
+#-----------------Initialization--------------------------#
+var v[SAMPLES] 							# array of samples
+var min 								# stats variables
+var max
+var mean
+var i = 0 								# counter
+call math.fill( v, 0 ) 					# initialize arrray
+timer.period[0] = SAMPLE_PERIOD 		# start the timer
+
+#-----------------Event Handlers-------------------------#		
+onevent timer0 							# when time goes off
+	v[i] = prox.horizontal[SENSOR] 		# record sensor reading
+	i++ 								# increment counter
+	if i >= SAMPLES then 				# if we are done
+		timer.period[0] = 0 			# disable timer and
+		call math.stat( v, min, max, mean ) # compute stats
+	end
+	call sound.freq(440, 10) 			# beep </node>
+
+
+</network>
